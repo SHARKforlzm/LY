@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>信封网页</title>
+    <title>生日快乐</title>
     <style>
         body {
             font-family: 'Georgia', serif;
@@ -11,6 +11,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
             height: 100vh;
             margin: 0;
         }
@@ -46,7 +47,7 @@
             padding: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
             border-radius: 5px;
-            overflow: auto; /* 允许滚动 */
+            overflow: auto;
             transition: transform 1.5s ease-out;
         }
 
@@ -70,15 +71,83 @@
         h2 {
             font-size: 1.5em;
             color: black;
-            text-align: center; /* 标题居中 */
+            text-align: center;
         }
 
         p {
             font-size: 1em;
             color: black;
             white-space: pre-wrap;
-            text-align: center; /* 诗的内容居中 */
+            text-align: center;
         }
+
+        /* 转盘样式 */
+        #wheel {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 10px solid #ff4500;
+            background: conic-gradient(
+                #fff8dc 0deg, #ff4500 18deg, 
+                #fff8dc 36deg, #ff4500 54deg, 
+                #fff8dc 72deg, #ff4500 90deg, 
+                #fff8dc 108deg, #ff4500 126deg, 
+                #fff8dc 144deg, #ff4500 162deg, 
+                #fff8dc 180deg, #ff4500 198deg, 
+                #fff8dc 216deg, #ff4500 234deg, 
+                #fff8dc 252deg, #ff4500 270deg, 
+                #fff8dc 288deg, #ff4500 306deg, 
+                #fff8dc 324deg, #ff4500 342deg, 
+                #fff8dc 360deg);
+            position: relative;
+            margin-top: 30px;
+        }
+
+        #pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 40px solid #ff4500;
+        }
+
+        .spin-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ff4500;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .spin-button:disabled {
+            background-color: #ccc;
+        }
+
+        /* 数字标注 */
+        .number {
+            position: absolute;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: black;
+        }
+
+        /* 具体数字位置 */
+        #number1 { top: 25px; left: 50%; transform: translateX(-50%); }
+        #number2 { top: 70px; left: 75%; transform: translateX(-50%); }
+        #number3 { top: 150px; left: 85%; transform: translateX(-50%); }
+        #number4 { top: 230px; left: 75%; transform: translateX(-50%); }
+        #number5 { top: 270px; left: 50%; transform: translateX(-50%); }
+        #number6 { top: 230px; left: 25%; transform: translateX(-50%); }
+        #number7 { top: 150px; left: 15%; transform: translateX(-50%); }
+        #number8 { top: 70px; left: 25%; transform: translateX(-50%); }
+        #number9 { top: 150px; left: 50%; transform: translateX(-50%); }
 
     </style>
 </head>
@@ -100,17 +169,32 @@
                     四十载默默守护，<br>
                     你教会了我责任，<br>
                     你的双眼仍闪烁着光芒。
-                   
-                    生日快乐！
+                    生日快乐
                 </p>
             </div>
         </div>
     </div>
 
+    <!-- 转盘 -->
+    <div id="wheel-container" style="display: none;">
+        <div id="wheel">
+            <div id="pointer"></div>
+            <div id="number1" class="number">1</div>
+            <div id="number2" class="number">50</div>
+            <div id="number3" class="number">100</div>
+            <div id="number4" class="number">200</div>
+            <div id="number5" class="number">400</div>
+            <div id="number6" class="number">600</div>
+            <div id="number7" class="number">800</div>
+            <div id="number8" class="number">913</div>
+        </div>
+        <button class="spin-button" id="spin-button">转动转盘</button>
+    </div>
+
     <script>
         function checkPassword() {
             var input = document.getElementById("password-input").value;
-            var correctPassword = "240913";  // 设定密码
+            var correctPassword = "240913";
 
             if (input === correctPassword) {
                 document.getElementById("envelope").classList.add('open');
@@ -123,11 +207,36 @@
             var container = document.getElementById('container');
             container.style.width = '100vw';
             container.style.height = '100vh';
+            document.getElementById("wheel-container").style.display = "block"; // 显示转盘
         }
 
-        // 监听密码输入框的变化
         document.getElementById('password-input').addEventListener('input', function() {
             checkPassword();
+        });
+
+        // 转盘动画和逻辑
+        var isSpinning = false;
+        document.getElementById('spin-button').addEventListener('click', function() {
+            if (isSpinning) return;
+
+            isSpinning = true;
+            var wheel = document.getElementById('wheel');
+            var spinButton = document.getElementById('spin-button');
+            spinButton.disabled = true;
+
+            // 模拟转盘旋转
+            var randomDegrees = Math.floor(Math.random() * 360) + (360 * 5);  // 旋转 5 圈
+            wheel.style.transition = "transform 4s ease-out";
+            wheel.style.transform = `rotate(${randomDegrees}deg)`;
+
+            setTimeout(function() {
+                // 确保最后结果是 913
+                wheel.style.transition = "none";
+                wheel.style.transform = `rotate(${(360 * 5) + 270}deg)`;  // 270度指向913的位置
+                isSpinning = false;
+                alert("你抽到了 913 元！");
+                spinButton.disabled = false;
+            }, 4000);
         });
     </script>
 </body>
